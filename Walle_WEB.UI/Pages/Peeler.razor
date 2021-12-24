@@ -1,0 +1,358 @@
+﻿@page "/inicio-peeler"
+@inject HttpClient Http
+@inject IPeelerService PeelerService
+@inject IJSRuntime JS
+@inject IJSRuntime JsRuntime
+
+@using Model
+@using Interfaces
+@using System.IO;
+@using System.Text.Json;
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Threading.Tasks;
+@using System.Threading;
+@using System.Globalization;
+
+<h2>Component</h2>
+
+
+<EditForm Model="@peelerbitacora"  OnSubmit="SavePeeler">
+    <DataAnnotationsValidator/>
+    <div class="form-group">  
+            <div class="form-row col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                  <div class="col-md-2">
+                        <div>                       
+                              <label class="align-baseline">Lote: </label>
+                         </div>
+                  </div>     
+                  
+                  <div class="col-md-7">                    
+                        <div>                       
+                             <input type="text" class="form-control mb-2 mr-sm-2" tabindex=1 onfocus=true autofocus=true 
+                              @bind="peelerbitacora.NoDeLote" placeholder="Numero de Lote" />
+                        </div>
+                  </div>
+
+                  <div class="col-md-3">
+                        <div>                                
+                             <button type="button" class="btn btn-primary mr-sm-2 mb-2"
+                              @onclick="Busqueda">Buscar</button>          
+                        </div>
+                   </div>
+             </div>               
+       
+
+           <div class="form-row col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                <div class="col-md-5" style="text-align-last:left">
+                        <div>
+                                 <label>Cilindro</label>
+                            <InputNumber class="form-control" @bind-Value="@peelerbitacora.NoDeBloque" placeholder="Numero de Cilindro"></InputNumber>
+                            <ValidationMessage For="@(() => peelerbitacora.NoDeBloque)"></ValidationMessage>
+                        </div>
+                </div>                   
+         
+                <div class="col-md-7" style="text-align-last:left">
+                    <div>
+                         <label>Tipo Espuma</label>
+                            <InputText class="form-control" @bind-Value="@peelerbitacora.TipoDeEspuma" placeholder="Tipo"></InputText>
+                            <ValidationMessage For="@(() => peelerbitacora.TipoDeEspuma)"></ValidationMessage>
+                    </div>
+                </div>
+        </div>
+
+        @*readonly="readonly*@
+
+        <div class="form-row col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                               
+                <div class="col-md-7">
+                    <div>
+                        <label>Fecha</label>       
+                          <InputDate class="form-control" @bind-Value="@peelerbitacora.FechaPeeler" format-value="dd-MM-yyyy" Date="DateTime.Today"></InputDate>
+                            <ValidationMessage For="@(() => peelerbitacora.FechaPeeler)"/>
+                    </div>
+                </div>
+
+                 <div class="col-md-5" style="text-align-last:left">                                            
+                      <div>
+                          <label>Pedido</label>       
+                          <InputNumber class="form-control" @bind-Value="@peelerbitacora.IdPedido" placeholder="No. de Pedido"></InputNumber>
+                            <ValidationMessage For="@(() => peelerbitacora.IdPedido)"></ValidationMessage>  
+                       
+                      </div>
+                 </div>              
+           </div>               
+
+
+        <div class="form-row col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                <div class="col-md-6">
+                       <label>Operador</label> 
+                    <div>                                                             
+                         <select class="form-control" @bind="peelerbitacora.IdOperador">                        
+                                <option value=0>-Seleccione-</option>
+                                <option value=1>Juan Lopez</option>
+                                <option value=2>Arturo Martinez</option>
+                                <option value=3>Daniel Jimenez</option>
+                                <option value=4>Pedro Torres</option>
+                                <option value=5>Ricardo Soto</option>
+                                <option value=6>Bradon Alanis</option>
+                        </select>
+
+
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div>
+                         <label>Maquina</label>    
+                           <select class="form-control" @bind="peelerbitacora.IdMaquina">
+                                <option value=0>--Seleccione--</option>
+                                <option value=1>Peeler 1</option>
+                                <option value=2>Peeler 2</option>        
+                            </select>
+                    </div>
+                </div>
+        </div>
+
+        <div class="form-row col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">                    
+                <div class="col-md-5" style="text-align-last:left">
+                        <div>
+                           <label>Alma</label>
+                           <select class="form-control" @bind="peelerbitacora.Alma">
+                                <option value=0>--Seleccione--</option>
+                                <option value=1>Alma 1</option>
+                                <option value=2>Alma 2</option>        
+                            </select>
+                              
+                        </div>
+                </div>
+
+                <div class="col-md-7">                   
+                        <div>
+                            <label>Observaciones</label>
+                           <InputSelect class="form-control" @bind-Value="@peelerbitacora.DetallesId">
+                                <option value="sd">Sin defecto</option>
+                                <option value="ph">Pinhole</option>                                
+                                <option value="g">Grieta</option>
+                                <option value="gi">Grieta Interna</option>
+                                <option value="v">Vena</option>
+                                <option value="mm">Mal manejo</option>
+                                <option value="fm">Fuera de medida</option> 
+                                <option value="a">Algodonozo</option> 
+                                <option value="aa">Manchado</option> 
+                            </InputSelect>
+                        </div>
+                    </div>
+         </div>
+                         
+
+         <div class="form-row col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                    <div class="col-md-7">                   
+                        <div>
+                            <label>Espesor</label>
+                             <InputNumber class="form-control col-sm-5" @bind-Value="@peelerbitacora.Espesor" placeholder="Espesor del Peeler"></InputNumber>
+                            <ValidationMessage For="@(() => peelerbitacora.Espesor)"></ValidationMessage>            
+                        </div>
+                    </div>
+
+                     <div class="col-md-5" style="text-align-last:left">
+                          <div>
+                             <label>Largo</label>
+                             <InputNumber class="form-control mb-2 mr-sm-2" @bind-Value="@peelerbitacora.Largo" placeholder="Largo del Peeler"></InputNumber>
+                             <ValidationMessage For="@(() => peelerbitacora.Largo)"></ValidationMessage>     
+                        </div>
+                    </div>
+
+        </div>
+
+
+           
+         <div class="form-row col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                    <div class="col-md-7">    
+                         <label>Peso Rollo</label>
+                         <div>                                                      
+                               <InputNumber class="form-control mb-2 mr-sm-2" @bind-Value="@peelerbitacora.PesoRollo" placeholder="Peso Rollo Peeler"></InputNumber>
+                             <ValidationMessage For="@(() => peelerbitacora.PesoRollo)"></ValidationMessage> 
+                        </div>
+                    </div>
+
+                     <div class="col-md-5" style="text-align-last:left">
+                         <label>Recuperable</label>
+                        <div>                            
+                             <InputNumber class="form-control mb-2 mr-sm-2" @bind-Value="@peelerbitacora.PesoRecuperable" placeholder="Material Recuperable"></InputNumber>
+                             <ValidationMessage For="@(() => peelerbitacora.PesoRecuperable)"></ValidationMessage> 
+                       </div>
+                    </div>
+          </div>
+
+          
+           <input type="submit" class="btn btn-success mr-sm-2 mb-2" value="Grabar" />
+
+  @*  <button type="button" class="btn btn-success mr-sm-2 mb-2"
+            @onclick="Save">Save</button>
+*@
+                              
+          <button type="button" class="btn btn-danger mb-2" @onclick="Limpiar">Limpiar</button>
+</div>
+</EditForm>
+   
+
+
+
+@code {
+    PeelerBitacora peelerbitacora = new PeelerBitacora();
+
+    private int paginaActual = 1;
+    private int paginasTotales;
+    private string numeroLoteFiltro;
+    private decimal RolloFiltro;
+    private int PedidoFiltro;
+    private int CilindroFiltro;
+    private string TipoEspuma;
+    private int Alma;
+    private DateTimeOffset Fecha;
+    private int Turno = 1;
+    private int Maquina;
+    private int Operador;
+    private decimal Altura;
+    private decimal Desperdicio;
+    private decimal Largo;
+    private decimal Espesor;
+    private string Observaciones;
+    private decimal PesoRollo = 0;
+    private decimal Recuperable;
+    private int Pesaje = 0;
+    public string VarHoraIni;
+    public string Message { get; set; }
+
+    protected async Task SavePeeler()
+    {
+        paginaActual = 1;
+        var VarHoraIni = DateTime.Now.ToString("hh:mm:ss tt");
+        var VarHoraFin = DateTime.Now.ToString("hh:mm:ss tt");
+        var VarFecha = DateTime.Now;
+
+
+        peelerbitacora.IdTurno = 1;
+
+        if (peelerbitacora.DetallesId == "sd")
+        {
+            peelerbitacora.DetallesId = "sd";
+            peelerbitacora.Dañado = false;
+        }
+        else
+        {
+            peelerbitacora.Dañado = true;
+        }
+
+        peelerbitacora.HoraInicial = DateTime.Now.TimeOfDay;
+        peelerbitacora.HoraFinal = DateTime.Now.TimeOfDay;
+        // var VarHoraIni = DateTime.Now.Hour+":"+ DateTime.Now.Minute + ":" + DateTime.Now.Second + "." + DateTime.Now.Millisecond;
+        peelerbitacora.PesoDesperdicio = (peelerbitacora.PesoRollo - peelerbitacora.PesoRecuperable);
+        peelerbitacora.NoRollo = 1;
+        peelerbitacora.Created = DateTime.Now;
+        peelerbitacora.UserCreated = 1;
+        peelerbitacora.Updated = DateTime.Now;
+        peelerbitacora.UserUpdated = 1;
+
+
+        await PeelerService.SavePeeler(peelerbitacora);
+
+    }
+
+    private async Task Limpiar()
+    {
+        numeroLoteFiltro = string.Empty;
+        paginaActual = 1;
+        //await CargarPeeler();
+    }
+
+
+    private async Task Save()
+    {
+        paginaActual = 1;
+
+        var VarHoraFin = DateTime.Now.ToString("hh:mm:ss tt");
+
+        var VarFecha = DateTime.Now;
+        //GrabaPeeler = new SqlConfiguration(a).GrabarPeeler(numeroLoteFiltro, CilindroFiltro, TipoEspuma, VarFecha, PedidoFiltro, Observaciones, PesoRollo, Alma, Espesor, Largo, Recuperable, Desperdicio, Maquina, Operador, Turno, VarHoraIni, VarHoraFin);        
+        int x = 0;
+    }
+
+
+    public async Task Busqueda()
+    {
+        VarHoraIni = DateTime.Now.ToString("hh:mm:ss tt");
+        int startIndex = 5;
+        int Caracteres = numeroLoteFiltro.Length;
+        Caracteres = Caracteres;
+        int PosInicial = Caracteres - 2;
+        int length = 2;
+        string bloque = numeroLoteFiltro.Substring(PosInicial, length);
+
+
+        var Tipo = numeroLoteFiltro;
+        var Col = 0;
+        Col = Tipo.IndexOf("/");
+
+        var Cons = Tipo.Substring(0, Col);
+        if (Cons != null)
+        {
+            //ViewBag.VarConsecutivo = Cons;
+        }
+
+        Cons = Cons + "/";
+        Tipo = Tipo.Replace(Cons, "");
+        Col = Tipo.IndexOf("/");
+
+        Cons = Tipo.Substring(0, Col);
+        if (Cons != null)
+        {
+            //ViewBag.VarConsecutivo = Cons;
+        }
+
+        Cons = Cons + "/";
+        Tipo = Tipo.Replace(Cons, "");
+
+
+        Col = Tipo.IndexOf("/");
+
+        Cons = Tipo.Substring(0, Col);
+        if (Cons != null)
+        {
+            //ViewBag.VarConsecutivo = Cons;
+        }
+
+        TipoEspuma = Cons;
+
+        int Cilindro = int.Parse(bloque);
+        CilindroFiltro = Cilindro;
+        String numeroLote = numeroLoteFiltro.Substring(0, PosInicial - 1);
+        numeroLoteFiltro = numeroLote;
+    }
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        //peelerbitacora = new PeelerBitacora();
+        //peelerbitacora.OnSelectedPeelerChanged += StateHasChanged();
+        //return base.OnInitializedAsync();
+        var DateAndTime = DateTime.Now;
+        Fecha = DateAndTime;
+
+    }
+
+
+    //protected async override Task OnInitializedAsync()
+    //{
+    //    try
+    //    {
+    //        peelerbitacora =  await PeelerService.GetAllPeeler();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Message = "Something went wrong... " + ex.Message;
+    //    }
+    //}
+}

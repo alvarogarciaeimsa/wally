@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RazorLangVersion>3.0</RazorLangVersion>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.19" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.19" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="17.0.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Walle_WEB.Model\Walle_WEB.Model.csproj" />
+  </ItemGroup>
+
+</Project>

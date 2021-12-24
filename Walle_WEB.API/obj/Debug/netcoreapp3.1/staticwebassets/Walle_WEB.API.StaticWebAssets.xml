@@ -1,0 +1,4 @@
+﻿<StaticWebAssets Version="1.0">
+  <ContentRoot BasePath="_content/Walle_WEB.Data" Path="C:\Users\Usuario\source\repos\Walle_WEB\Walle_WEB.Data\wwwroot\" />
+  <ContentRoot BasePath="_content/Walle_WEB.Model" Path="C:\Users\Usuario\source\repos\Walle_WEB\Walle_WEB.Model\wwwroot\" />
+</StaticWebAssets>
